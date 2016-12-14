@@ -1,8 +1,14 @@
 from collections import namedtuple
 import math
 
-Point = namedtuple('Point', 'x y')
+from .vector import Vector
+
+MINIMAL_DISTANCE = 0.1 # distances smaller than that will be considered 0
 
 
-def distance(point1, point2):
-    return math.sqrt((point1.x - point2.x)**2 + (point1.y - point2.y)**2)
+def distance(vector1, vector2):
+    return (vector2 - vector1).norm()
+
+
+def same_location(vector1, vector2):
+    return distance(vector1, vector2) < MINIMAL_DISTANCE
