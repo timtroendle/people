@@ -1,6 +1,6 @@
 import pytest
 
-from test_person import pseudo_random, sleeping_person
+from test_activity_choice import pseudo_random, sleeping_person
 from test_travelling_man import home, work, activity_markov_chains, person
 
 from people import Building, Vector, Activity

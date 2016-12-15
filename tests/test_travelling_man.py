@@ -3,7 +3,7 @@ from collections import OrderedDict
 import pytest
 import pykov
 
-from test_person import pseudo_random, sleeping_person
+from test_activity_choice import pseudo_random, sleeping_person
 
 from people import Activity, Building, Vector
 from people.location import distance, same_location
