@@ -61,7 +61,7 @@ def sleeping_person(activity_markov_chains, building_query, pseudo_random):
         activity_markov_chains=activity_markov_chains,
         number_generator=pseudo_random,
         building_query=building_query,
-        velocity=10 * 1000 / 3600,
+        speed=10 * 1000 / 3600,
         initial_activity=Activity.SLEEP,
         initial_time=datetime(2016, 12, 13, 15, 00), # Tuesday
         initial_location=Vector(0, 0),
@@ -75,7 +75,7 @@ def weekend_person(activity_markov_chains, building_query, pseudo_random):
         activity_markov_chains=activity_markov_chains,
         number_generator=pseudo_random,
         building_query=building_query,
-        velocity=10 * 1000 / 3600,
+        speed=10 * 1000 / 3600,
         initial_activity=Activity.WORK,
         initial_time=datetime(2016, 12, 18, 15, 00), # Sunday
         initial_location=Vector(0, 0),

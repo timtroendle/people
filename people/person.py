@@ -7,15 +7,48 @@ from .location import same_location, distance
 
 
 class Activity(Enum):
+    """Activities of citizens."""
     TRANSIT = 1
     SLEEP = 2
     WORK = 3
 
 
 class Person():
+    """The model of a citizen making choices on activities and locations.
 
-    def __init__(self, activity_markov_chains, initial_activity, number_generator,
-                 initial_time, initial_location, velocity, building_query, time_step_size):
+    Parameters:
+        * activity_markov_chains: one pykov.Chain markov chain for each hour of each, weekday and
+                                  weekend day
+        * number_generator:       a callable returning a random number between min and max
+                                  parameters
+        * building_query:         a callable returning buildings in which the passed activity
+                                  can be performed
+        * speed:                  the average speed with which the person is travelling through
+                                  the city in m/s
+        * initial_activity:       the activity at initial time
+        * initial_location:       the location at initial time
+        * initial_time:           the initial time
+        * time_step_size:         the time step size of the simulation
+
+    For example:
+
+    Person(
+        activity_markov_chains={
+            'weekday': {hour: pykov.Chain(...) for hour in range(24)},
+            'weekend': {hour: pykov.Chain(...) for hour in range(24)}
+        },
+        number_generator=random.uniform,
+        building_query=lambda activity: if activity == WORK return (some_work_building,),
+        speed=10 * 1000 / 3600,
+        initial_activity=SLEEP,
+        initial_time=datetime(2016, 12, 15, 12, 06),
+        initial_location=Vector(0, 0),
+        time_step_size=timedelta(hours=1)
+    )
+    """
+
+    def __init__(self, activity_markov_chains, number_generator, building_query, speed,
+                 time_step_size, initial_activity, initial_time, initial_location):
         self.__chain = _TimeHeterogenousMarkovChain(activity_markov_chains, number_generator)
         if not isinstance(initial_activity, Activity):
             raise ValueError('Initial activity must be derived from Activity.')
@@ -24,12 +57,18 @@ class Person():
         self.__number_generator = number_generator
         self.__travelling_to = None
         self.__travelling_for = None
-        self.__distance_per_step = velocity * time_step_size.total_seconds()
+        self.__distance_per_step = speed * time_step_size.total_seconds()
         self.__building_query = building_query
         self.__time = initial_time
         self.__time_step_size = time_step_size
 
     def step(self):
+        """Run simulation for one time step.
+
+        Updates internal time by time step.
+        Moves in space if currently in transit.
+        Chooses new activity.
+        """
         self.__time += self.__time_step_size
         if self.activity == Activity.TRANSIT:
             self.location = self.__determine_next_location()

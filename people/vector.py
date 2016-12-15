@@ -27,12 +27,15 @@ import math
 
 
 class Vector(object):
-    def __init__(self, *args):
-        """ Create a vector, example: v = Vector(1,2) """
-        if len(args) == 0:
-            self.values = (0, 0)
-        else:
-            self.values = args
+    """A location vector in a x,y plane.
+
+    Paramters:
+        * x: in [m]
+        * y: in [m]
+    """
+
+    def __init__(self, x, y):
+        self.values = (x, y)
 
     def norm(self):
         """ Returns the norm (length, magnitude) of the vector """
