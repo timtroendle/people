@@ -43,29 +43,34 @@ def activity_markov_chains():
     }
 
 
-def test_person_starts_commute(sleeping_person):
-    sleeping_person.step()
-    assert sleeping_person.activity == Activity.TRANSIT
+@pytest.fixture
+def person(sleeping_person):
+    return sleeping_person
 
 
-def test_commuting_person_moves_towards_next_building(sleeping_person, work):
-    initial_location = sleeping_person.location
-    sleeping_person.step()
-    sleeping_person.step() # location is updated at the end of a travelling time step
-    assert (distance(sleeping_person.location, work.location) <
+def test_person_starts_commute(person):
+    person.step()
+    assert person.activity == Activity.TRANSIT
+
+
+def test_commuting_person_moves_towards_next_building(person, work):
+    initial_location = person.location
+    person.step()
+    person.step() # location is updated at the end of a travelling time step
+    assert (distance(person.location, work.location) <
             distance(initial_location, work.location))
 
 
-def test_work_not_reached_after_one_time_step(sleeping_person, work):
-    sleeping_person.step()
-    sleeping_person.step()
-    assert not same_location(sleeping_person.location, work.location)
-    assert sleeping_person.activity is Activity.TRANSIT
+def test_work_not_reached_after_one_time_step(person, work):
+    person.step()
+    person.step()
+    assert not same_location(person.location, work.location)
+    assert person.activity is Activity.TRANSIT
 
 
-def test_commuting_to_work_takes_two_time_steps(sleeping_person, work):
-    sleeping_person.step()
-    sleeping_person.step()
-    sleeping_person.step()
-    assert same_location(sleeping_person.location, work.location)
-    assert sleeping_person.activity == Activity.WORK
+def test_commuting_to_work_takes_two_time_steps(person, work):
+    person.step()
+    person.step()
+    person.step()
+    assert same_location(person.location, work.location)
+    assert person.activity == Activity.WORK

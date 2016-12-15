@@ -1,6 +1,9 @@
 from enum import Enum
+from collections import OrderedDict
 
-from .location import same_location
+import pykov
+
+from .location import same_location, distance
 
 
 class Activity(Enum):
@@ -18,6 +21,7 @@ class Person():
             raise ValueError('Initial activity must be derived from Activity.')
         self.activity = initial_activity
         self.location = initial_location
+        self.__number_generator = number_generator
         self.__travelling_to = None
         self.__travelling_for = None
         self.__distance_per_step = velocity * time_step_size.total_seconds()
@@ -63,10 +67,24 @@ class Person():
                 return next_activity
 
     def _choose_building(self, activity_choice):
-        possible_buildings = self.__building_query(activity_choice)
-        assert len(possible_buildings) > 0, "Couldn't find any buildings for \
+        buildings = self.__building_query(activity_choice)
+        assert len(buildings) > 0, "Couldn't find any buildings for \
                                              activity {}.".format(activity_choice)
-        return possible_buildings[0]
+        if len(buildings) == 1:
+            return buildings[0]
+        elif any(same_location(building.location, self.location) for building in buildings):
+            same_location_buildings = filter(
+                lambda building: same_location(building.location, self.location),
+                buildings
+            )
+            return list(same_location_buildings)[0]
+        else:
+            vector = pykov.Vector(OrderedDict(
+                [(building, 1 / distance(building.location, self.location))
+                 for building in buildings]
+            ))
+            vector.normalize()
+            return vector.choose(random_func=self.__number_generator)
 
 
 class _TimeHeterogenousMarkovChain():
